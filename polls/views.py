@@ -19,6 +19,13 @@ class PollCreate(generics.CreateAPIView):
     permission_classes = (IsAdminUser,)
 
 
+class PollUpdate(generics.RetrieveUpdateDestroyAPIView):
+    """ Admin updates/deletes a Poll object via PUT, DELETE """
+    queryset = Poll.objects.all()
+    serializer_class = PollDetailSerializer
+    permission_classes = (IsAdminUser,)
+
+
 class PollList(generics.ListCreateAPIView):
     """ A list of all Polls (incl. future and expired).
         Available only to Admin via GET
@@ -37,6 +44,9 @@ class ActivePollsList(generics.ListCreateAPIView):
 
 
 class PollDetail(APIView):
+    """ A Poll detailed view (with all fields + questions + choices).
+        Available to anyone via GET
+    """
     def get(self, request, pk):
         poll = get_object_or_404(Poll, pk=pk)
         data = PollDetailSerializer(poll).data
@@ -49,7 +59,17 @@ class QuestionCreate(generics.CreateAPIView):
     permission_classes = (IsAdminUser,)
 
 
+class QuestionUpdate(generics.RetrieveUpdateDestroyAPIView):
+    """ Admin updates/deletes a Question object via PUT, DELETE """
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    permission_classes = (IsAdminUser,)
+
+
 class QuestionList(generics.ListCreateAPIView):
+    """ A list of all Questions of a specific Poll.
+        Available to anyone via GET
+    """
     def get_queryset(self):
         queryset = Question.objects.filter(poll_id=self.kwargs["pk"])
         return queryset
@@ -57,6 +77,9 @@ class QuestionList(generics.ListCreateAPIView):
 
 
 class QuestionDetail(APIView):
+    """ A Poll detailed view (with all fields + choices).
+        Available to anyone via GET
+    """
     def get(self, request, pk, q_pk):
         question = get_object_or_404(Question, pk=q_pk)
         data = QuestionSerializer(question).data
@@ -65,6 +88,13 @@ class QuestionDetail(APIView):
 
 class ChoiceCreate(generics.CreateAPIView):
     """ Admin creates a Choice object via POST """
+    serializer_class = ChoiceSerializer
+    permission_classes = (IsAdminUser,)
+
+
+class ChoiceUpdate(generics.RetrieveUpdateDestroyAPIView):
+    """ Admin updates/deletes a Question object via PUT, DELETE """
+    queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
     permission_classes = (IsAdminUser,)
 
