@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -22,7 +22,9 @@ class PollDetail(APIView):
 
 
 class QuestionList(generics.ListCreateAPIView):
-    queryset = Question.objects.all()
+    def get_queryset(self):
+        queryset = Question.objects.filter(poll_id=self.kwargs["pk"])
+        return queryset
     serializer_class = QuestionSerializer
 
 
@@ -33,7 +35,7 @@ class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class ChoiceList(generics.ListCreateAPIView):
     def get_queryset(self):
-        queryset = Choice.objects.filter(question_id=self.kwargs["pk"])
+        queryset = Choice.objects.filter(question_id=self.kwargs["q_pk"])
         return queryset
     serializer_class = ChoiceSerializer
 
@@ -41,9 +43,9 @@ class ChoiceList(generics.ListCreateAPIView):
 class CreateVote(APIView):
     serializer_class = VoteSerializer
 
-    def post(self, request, pk, choice_pk):
+    def post(self, request, pk, q_pk, c_pk):
         voted_by = request.data.get("voted_by")
-        data = {'choice': choice_pk, 'question': pk, 'voted_by': voted_by}
+        data = {'choice': c_pk, 'question': q_pk, 'poll': pk, 'voted_by': voted_by}
         serializer = VoteSerializer(data=data)
         if serializer.is_valid():
             vote = serializer.save()
