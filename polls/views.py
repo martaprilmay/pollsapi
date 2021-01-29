@@ -1,8 +1,10 @@
 from datetime import date
 
 from rest_framework import generics, status
-from rest_framework.views import APIView
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from django.shortcuts import get_object_or_404
 
 from .models import Poll, Question, Choice
@@ -10,17 +12,27 @@ from .serializers import (PollDetailSerializer, PollListSerializer, QuestionSeri
                           VoteSerializer, VotesSerializer, AnswerSerializer)
 
 
-class PollList(APIView):
-    def get(self, request):
-        polls = Poll.objects.all()[:20]
-        data = PollListSerializer(polls, many=True).data
-        return Response(data)
+class PollCreate(generics.CreateAPIView):
+    """ Admin creates a Poll object via POST """
+
+    serializer_class = PollDetailSerializer
+    permission_classes = (IsAdminUser,)
+
+
+class PollList(generics.ListCreateAPIView):
+    """ A list of all Polls (incl. future and expired).
+        Available only to Admin via GET
+    """
+    queryset = Poll.objects.all()
+    serializer_class = PollListSerializer
+    permission_classes = (IsAdminUser,)
 
 
 class ActivePollsList(generics.ListCreateAPIView):
-    def get_queryset(self):
-        queryset = Poll.objects.filter(start_date__lte=date.today()).filter(end_date__gte=date.today())
-        return queryset
+    """ A list of active Polls (with id, name and description).
+        Available to anyone via GET
+    """
+    queryset = Poll.objects.filter(start_date__lte=date.today()).filter(end_date__gte=date.today())
     serializer_class = PollListSerializer
 
 
@@ -29,6 +41,12 @@ class PollDetail(APIView):
         poll = get_object_or_404(Poll, pk=pk)
         data = PollDetailSerializer(poll).data
         return Response(data)
+
+
+class QuestionCreate(generics.CreateAPIView):
+    """ Admin creates a Question object via POST """
+    serializer_class = QuestionSerializer
+    permission_classes = (IsAdminUser,)
 
 
 class QuestionList(generics.ListCreateAPIView):
@@ -43,6 +61,12 @@ class QuestionDetail(APIView):
         question = get_object_or_404(Question, pk=q_pk)
         data = QuestionSerializer(question).data
         return Response(data)
+
+
+class ChoiceCreate(generics.CreateAPIView):
+    """ Admin creates a Choice object via POST """
+    serializer_class = ChoiceSerializer
+    permission_classes = (IsAdminUser,)
 
 
 class ChoiceList(generics.ListCreateAPIView):
