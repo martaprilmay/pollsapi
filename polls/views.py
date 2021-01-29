@@ -38,11 +38,11 @@ class QuestionList(generics.ListCreateAPIView):
     serializer_class = QuestionSerializer
 
 
-class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
-    def get_queryset(self):
-        queryset = Question.objects.filter(id=self.kwargs["q_pk"])
-        return queryset
-    serializer_class = QuestionSerializer
+class QuestionDetail(APIView):
+    def get(self, request, pk, q_pk):
+        question = get_object_or_404(Question, pk=q_pk)
+        data = QuestionSerializer(question).data
+        return Response(data)
 
 
 class ChoiceList(generics.ListCreateAPIView):
