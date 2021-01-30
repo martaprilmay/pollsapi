@@ -101,7 +101,10 @@ class ChoiceUpdate(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAdminUser,)
 
 
-class ChoiceList(generics.ListCreateAPIView):
+class ChoiceList(generics.ListAPIView):
+    """ A list of all choices (if any) for a specified question.
+        Available to anyone via GET
+    """
     def get_queryset(self):
         queryset = Choice.objects.filter(question_id=self.kwargs["q_pk"])
         return queryset
@@ -109,6 +112,7 @@ class ChoiceList(generics.ListCreateAPIView):
 
 
 class CreateAnswer(APIView):
+    """ User with an auth_id answers question via POST  """
     serializer_class = AnswerSerializer
     permission_classes = (HasAnID,)
 
@@ -134,7 +138,7 @@ class CreateAnswer(APIView):
 
 
 class MyAnswers(generics.ListAPIView):
-    """ A list of all answers by a specific user.
+    """ A list of all answers by a specified user.
         Available to the user or Admin via GET
     """
     serializer_class = AnswerDetailSerializer
