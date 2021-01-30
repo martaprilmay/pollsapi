@@ -9,15 +9,14 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.db.utils import IntegrityError
 
-from .models import Poll, Question, Choice
+from .models import Poll, Question, Choice, AuthID
 from .permissions import HasAnID
 from .serializers import (PollDetailSerializer, PollListSerializer, QuestionSerializer, ChoiceSerializer,
-                          VoteSerializer, VotesSerializer, AnswerSerializer, AuthIDSerializer)
+                          AnswerSerializer, AuthIDSerializer)
 
 
 class PollCreate(generics.CreateAPIView):
     """ Admin creates a Poll object via POST """
-
     serializer_class = PollDetailSerializer
     permission_classes = (IsAdminUser,)
 
@@ -109,42 +108,23 @@ class ChoiceList(generics.ListCreateAPIView):
     serializer_class = ChoiceSerializer
 
 
-class CreateVote(APIView):
-    serializer_class = VoteSerializer
-
-    def post(self, request, pk, q_pk, c_pk):
-        voted_by = request.data.get("voted_by")
-        data = {'choice': c_pk, 'question': q_pk, 'poll': pk, 'voted_by': voted_by}
-        serializer = VoteSerializer(data=data)
-        if serializer.is_valid():
-            vote = serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class CreateVotes(APIView):
-    serializer_class = VotesSerializer
-
-    def post(self, request, pk, q_pk):
-        selected_by = request.data.get("selected_by")
-        choices = request.data.get("choices")
-        data = {'question': q_pk, 'poll': pk, 'choices': choices, 'selected_by': selected_by}
-        serializer = VotesSerializer(data=data)
-        if serializer.is_valid():
-            vote = serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class CreateAnswer(APIView):
     serializer_class = AnswerSerializer
+    permission_classes = (HasAnID,)
 
     def post(self, request, pk, q_pk):
-        answered_by = request.data.get("answered_by")
+        answered_by = AuthID.objects.get(auth_id=request.headers['auth-id']).id
         answer_text = request.data.get("answer_text")
-        data = {'question': q_pk, 'poll': pk, 'answer_text': answer_text, 'answered_by': answered_by}
+        choice = request.data.get("choices")
+        choices = request.data.get("choices")
+        data = {
+            'question': q_pk,
+            'poll': pk,
+            'answer_text': answer_text,
+            'choice': choice,
+            'choices': choices,
+            'answered_by': answered_by,
+        }
         serializer = AnswerSerializer(data=data)
         if serializer.is_valid():
             vote = serializer.save()
@@ -154,6 +134,7 @@ class CreateAnswer(APIView):
 
 
 class CreateId(APIView):
+    """ Creates an AuthID object and returns an auth_id via POST """
     serializer_class = AuthIDSerializer
 
     def post(self, request):
