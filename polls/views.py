@@ -1,4 +1,5 @@
 from datetime import date
+from random import randint
 
 from rest_framework import generics, status
 from rest_framework.permissions import IsAdminUser
@@ -6,10 +7,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from django.shortcuts import get_object_or_404
+from django.db.utils import IntegrityError
 
 from .models import Poll, Question, Choice
 from .serializers import (PollDetailSerializer, PollListSerializer, QuestionSerializer, ChoiceSerializer,
-                          VoteSerializer, VotesSerializer, AnswerSerializer)
+                          VoteSerializer, VotesSerializer, AnswerSerializer, AuthIDSerializer)
 
 
 class PollCreate(generics.CreateAPIView):
@@ -146,5 +148,22 @@ class CreateAnswer(APIView):
         if serializer.is_valid():
             vote = serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CreateId(APIView):
+    serializer_class = AuthIDSerializer
+
+    def post(self, request):
+        auth_id = randint(1000000, 9999999)
+        data = {'auth_id': auth_id}
+        serializer = AuthIDSerializer(data=data)
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response(serializer.data['auth_id'], status=status.HTTP_201_CREATED)
+            except IntegrityError:
+                return post(self, request)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

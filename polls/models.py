@@ -63,3 +63,8 @@ class Answer(models.Model):
 
     class Meta:
         unique_together = ('poll', 'question', 'answered_by')
+
+
+class AuthID(models.Model):
+    auth_id = models.IntegerField(unique=True)
+

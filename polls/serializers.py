@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Poll, Question, Choice, Vote, Votes, Answer
+from .models import Poll, Question, Choice, Vote, Votes, Answer, AuthID
 
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -49,3 +49,9 @@ class PollListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Poll
         fields = ('id', 'poll_name', 'description')
+
+
+class AuthIDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AuthID
+        fields = '__all__'
