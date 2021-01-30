@@ -9,10 +9,10 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.db.utils import IntegrityError
 
-from .models import Poll, Question, Choice, AuthID
+from .models import Poll, Question, Choice, Answer, AuthID
 from .permissions import HasAnID
 from .serializers import (PollDetailSerializer, PollListSerializer, QuestionSerializer, ChoiceSerializer,
-                          AnswerSerializer, AuthIDSerializer)
+                          AnswerSerializer, AnswerDetailSerializer, AuthIDSerializer)
 
 
 class PollCreate(generics.CreateAPIView):
@@ -131,6 +131,20 @@ class CreateAnswer(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MyAnswers(generics.ListAPIView):
+    """ A list of all answers by a specific user.
+        Available to the user or Admin via GET
+    """
+    serializer_class = AnswerDetailSerializer
+    permission_classes = (HasAnID, IsAdminUser)
+
+    def get_queryset(self):
+        auth_id = self.request.headers['auth-id']
+        answered_by = AuthID.objects.get(auth_id=auth_id).id
+        queryset = Answer.objects.filter(answered_by=answered_by)
+        return queryset
 
 
 class CreateId(APIView):

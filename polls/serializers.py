@@ -13,8 +13,20 @@ class AnswerSerializer(serializers.ModelSerializer):
         extra_kwargs = {'selected_options': {'required': False, 'allow_null': True}}
         validators = []
 
+
+class AnswerDetailSerializer(serializers.ModelSerializer):
+    question = serializers.SlugRelatedField(slug_field='question_text', queryset=Question.objects.all())
+    selected_option = serializers.SlugRelatedField(slug_field='choice_text', queryset=Choice.objects.all())
+    selected_options = serializers.SlugRelatedField(slug_field='choice_text', many=True, queryset=Choice.objects.all())
+    poll = serializers.SlugRelatedField(slug_field='poll_name', queryset=Poll.objects.all())
+    answered_by = serializers.SlugRelatedField(slug_field='auth_id', queryset=AuthID.objects.all())
+
+    class Meta:
+        model = Answer
+        fields = '__all__'
+
     def to_representation(self, instance):
-        result = super(AnswerSerializer, self).to_representation(instance)
+        result = super(AnswerDetailSerializer, self).to_representation(instance)
         return OrderedDict([(key, result[key]) for key in result if result[key] is not None])
 
 

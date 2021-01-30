@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (PollList, ActivePollsList, PollCreate, PollUpdate, PollDetail,
                     QuestionList, QuestionCreate, QuestionUpdate, QuestionDetail,
                     ChoiceList, ChoiceCreate, ChoiceUpdate,
-                    CreateAnswer,
+                    CreateAnswer, MyAnswers,
                     CreateId)
 
 
@@ -25,6 +25,7 @@ urlpatterns = [
     path('choices/<int:pk>/update', ChoiceUpdate.as_view(), name='choices_update'),
 
     path('polls/<int:pk>/questions/<int:q_pk>/answer', CreateAnswer.as_view(), name='create_answer'),
+    path('polls/my-answers', MyAnswers.as_view(), name='my_answers'),
 
-    path('createid', CreateId.as_view(), name='create_id')
+    path('create-id', CreateId.as_view(), name='create_id')
 ]
