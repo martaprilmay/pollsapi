@@ -33,7 +33,7 @@ class PollListSerializer(serializers.ModelSerializer):
 
 
 class AnswerSerializer(serializers.ModelSerializer):
-    choices = ChoiceSerializer(many=True, read_only=True, required=False)
+    selected_options = ChoiceSerializer(many=True, read_only=True, required=False)
 
     class Meta:
         model = Answer

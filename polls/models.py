@@ -37,8 +37,8 @@ class Choice(models.Model):
 
 class Answer(models.Model):
     answer_text = models.CharField(max_length=128, null=True, blank=True)
-    choices = models.ManyToManyField(Choice, blank=True, related_name="selected_choices")
-    choice = models.ForeignKey(Choice, null=True, blank=True, related_name='votes', on_delete=models.CASCADE)
+    selected_option = models.ForeignKey(Choice, null=True, blank=True, related_name='votes', on_delete=models.CASCADE)
+    selected_options = models.ManyToManyField(Choice, blank=True, related_name="selected_choices")
     question = models.ForeignKey(Question, null=True, blank=True, on_delete=models.CASCADE)
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
     answered_by = models.ForeignKey('AuthID', on_delete=models.CASCADE)

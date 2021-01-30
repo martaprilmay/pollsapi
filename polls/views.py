@@ -115,14 +115,14 @@ class CreateAnswer(APIView):
     def post(self, request, pk, q_pk):
         answered_by = AuthID.objects.get(auth_id=request.headers['auth-id']).id
         answer_text = request.data.get("answer_text")
-        choice = request.data.get("choices")
-        choices = request.data.get("choices")
+        selected_option = request.data.get("selected_option")
+        selected_options = request.data.get("selected_options")
         data = {
             'question': q_pk,
             'poll': pk,
             'answer_text': answer_text,
-            'choice': choice,
-            'choices': choices,
+            'selected_option': selected_option,
+            'selected_options': selected_options,
             'answered_by': answered_by,
         }
         serializer = AnswerSerializer(data=data)
