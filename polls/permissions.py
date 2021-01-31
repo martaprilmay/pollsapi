@@ -9,7 +9,7 @@ class HasAnID(BasePermission):
     def has_permission(self, request, view):
         try:
             auth_id = int(request.META['HTTP_AUTH_ID'])
-        except ValueError or KeyError:
+        except KeyError or ValueError:
             return False
 
         id_set = {x.auth_id for x in AuthID.objects.all()}
