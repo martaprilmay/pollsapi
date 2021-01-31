@@ -1,6 +1,6 @@
 # Polls API
 
-REST API for creating polls, conducting and collecting answers
+RESTful API for creating polls, conducting and collecting answers
 
 ## Installation
 
