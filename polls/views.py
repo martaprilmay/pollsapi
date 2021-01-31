@@ -142,7 +142,7 @@ class MyAnswers(generics.ListAPIView):
         Available to the user or Admin via GET
     """
     serializer_class = AnswerDetailSerializer
-    permission_classes = (HasAnID, IsAdminUser)
+    permission_classes = (HasAnID,)
 
     def get_queryset(self):
         auth_id = self.request.headers['auth-id']
