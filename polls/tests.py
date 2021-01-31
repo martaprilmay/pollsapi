@@ -18,8 +18,8 @@ class TestSetUp(APITestCase):
         self.token = Token.objects.create(user=self.admin)
         self.user = AuthID.objects.create(auth_id=777)
         self.api_token_authentication()
-        self.api_int_authentication()
 
+        AuthID.objects.create(auth_id=111)
         poll = Poll.objects.create(poll_name='name', description='description', end_date='2021-02-20')
         question1 = Question.objects.create(poll=poll, question_text='Why?', question_type=1)
         question2 = Question.objects.create(poll=poll, question_text='What?', question_type=2)
@@ -40,9 +40,6 @@ class TestSetUp(APITestCase):
 
     def api_token_authentication(self):
         self.client.credentials(HTTP_AUTHORIZATION="Token " + str(self.token))
-
-    def api_int_authentication(self):
-        self.client.credentials(HTTP_AUTH_ID=self.user.auth_id)
 
 
 class TestPoll(TestSetUp):
@@ -235,4 +232,67 @@ class TestChoice(TestSetUp):
 
 
 class TestAnswer(TestSetUp):
-    pass
+
+    def api_int_authentication(self):
+        self.client.credentials(HTTP_AUTH_ID=111)
+
+    def test_create_text_answer_authenticated(self):
+        self.client.force_authenticate(user=None)
+        self.api_int_authentication()
+        url = reverse('polls:create-answer', kwargs={'pk': 1, 'q_pk': 2})
+        data = {'answer_text': 'my_answer', 'selected_options': []}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Answer.objects.count(), 4)
+        self.assertEqual(Answer.objects.get(pk=4).answer_text, 'my_answer')
+        self.assertEqual(Answer.objects.get(pk=4).question, Question.objects.get(pk=2))
+        self.assertEqual(Answer.objects.get(pk=4).poll, Poll.objects.get(pk=1))
+        self.assertEqual(Answer.objects.get(pk=4).answered_by, AuthID.objects.get(pk=2))
+
+    def test_create_single_option_answer_authenticated(self):
+        self.client.force_authenticate(user=None)
+        self.api_int_authentication()
+        url = reverse('polls:create-answer', kwargs={'pk': 1, 'q_pk': 3})
+        data = {'selected_option': 1, 'selected_options': []}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Answer.objects.count(), 4)
+        self.assertEqual(Answer.objects.get(pk=4).selected_option, Choice.objects.get(pk=1))
+        self.assertEqual(Answer.objects.get(pk=4).question, Question.objects.get(pk=3))
+        self.assertEqual(Answer.objects.get(pk=4).poll, Poll.objects.get(pk=1))
+        self.assertEqual(Answer.objects.get(pk=4).answered_by, AuthID.objects.get(pk=2))
+
+    def test_create_multiple_options_answer_authenticated(self):
+        self.client.force_authenticate(user=None)
+        self.api_int_authentication()
+        url = reverse('polls:create-answer', kwargs={'pk': 1, 'q_pk': 1})
+        data = {'selected_options': [3, 5]}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Answer.objects.count(), 4)
+        self.assertEqual(Answer.objects.get(pk=4).question, Question.objects.get(pk=1))
+        self.assertEqual(Answer.objects.get(pk=4).poll, Poll.objects.get(pk=1))
+        self.assertEqual(Answer.objects.get(pk=4).answered_by, AuthID.objects.get(pk=2))
+
+    def test_create_answer_unauthenticated(self):
+        self.client.force_authenticate(user=None)
+        url = reverse('polls:create-answer', kwargs={'pk': 1, 'q_pk': 1})
+        data = {'answer_text': 'my_answer', 'selected_options': []}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(Answer.objects.count(), 3)
+
+    def test_list_answers_by_user(self):
+        self.client.force_authenticate(user=None)
+        self.client.credentials(HTTP_AUTH_ID=self.user.auth_id)
+        url = reverse('polls:my-answers')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
+        self.assertEqual(response.data[0]['answer_text'], 'answer')
+
+    def test_list_answers_unauthenticated(self):
+        self.client.force_authenticate(user=None)
+        url = reverse('polls:my-answers')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
