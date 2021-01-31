@@ -10,4 +10,4 @@ jobs:
       run: |
         pip3 install --user django==2.2.10
         pip3 install --user djangorestframework
-        python manage.py test
+        python3 manage.py test
