@@ -9,8 +9,7 @@ docker build -t pollsapi .
 docker run --name pollsAPI -p 8000:8000 -d pollsapi
 ```
 
-## API Documentation
-Auto-generated version at http://localhost:8000/swagger or http://localhost:8000/redoc/
+# API Documentation
 
 ## Admin
 Admin can retrieve, create, update and delete polls, questions and choices.
