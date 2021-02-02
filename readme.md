@@ -17,7 +17,7 @@ Options available to everyone (not just to the admin user) are listed in the Use
 ### Authentication
 Authentication by Token. To Get a Token:
 * HTTP Method – POST
-* Endpoint – https://localhost:8000/api/v1/token-auth/
+* Endpoint – /api/v1/token-auth/
 * Body
     * username: admin_username
     * password: admin_password
@@ -28,7 +28,7 @@ curl --request POST 'http://localhost:8000/api/v1/token-auth/' \
 ```
 ### Retrieve All Polls
 * HTTP Method – GET
-* Endpoint – https://localhost:8000/api/v1/polls/all/
+* Endpoint – /api/v1/polls/all/
 * Header – Authorization: Token admin_token
 ```bash
 curl --request GET 'https://localhost:8000/api/v1/polls/all/' \
@@ -36,7 +36,7 @@ curl --request GET 'https://localhost:8000/api/v1/polls/all/' \
 ```
 ### Create Poll
 * HTTP Method – POST
-* Endpoint – https://localhost:8000/api/v1/polls/create/
+* Endpoint – /api/v1/polls/create/
 * Header – Authorization: Token admin_token
 * Body
     * poll_name: poll_name
@@ -51,7 +51,7 @@ curl --request POST 'https://localhost:8000/api/v1/polls/create/' \
 ```
 ### Update Poll
 * HTTP Method – PUT or PATCH
-* Endpoint – https://localhost:8000/api/v1/polls/[id]/update/
+* Endpoint – /api/v1/polls/[id]/update/
 * Param – id (poll id)
 * Header – Authorization: Token admin_token
 * Body
@@ -67,7 +67,7 @@ curl --request PUT 'https://localhost:8000/api/v1/polls/[id]/update/' \
 ```
 ### Delete Poll
 * HTTP Method – DELETE
-* Endpoint – https://localhost:8000/api/v1/polls/[id]/update/
+* Endpoint – /api/v1/polls/[id]/update/
 * Param – id (poll id)
 * Header – Authorization: Token admin_token
  ```bash
@@ -77,7 +77,7 @@ curl --request DELETE 'https://localhost:8000/api/v1/polls/[id]/update' \
 ### Create Question
 Question types are: 1 – text, 2 – select a single option, 3 – select multiple.
 * HTTP Method – POST
-* Endpoint – https://localhost:8000/api/v1/polls/[id]/questions/create/
+* Endpoint – /api/v1/polls/[id]/questions/create/
 * Param - id (poll id)
 * Header – Authorization: Token admin_token
 * Body
@@ -91,7 +91,7 @@ curl --request POST 'https://localhost:8000/api/v1/polls/[id]/questions/create' 
 ```
 ### Update Question
 * HTTP Method – PUT or PATCH
-* Endpoint – https://localhost:8000/api/v1/questions/[id]/update/
+* Endpoint – /api/v1/questions/[id]/update/
 * Param – id (question id)
 * Header – Authorization: Token admin_token
 * Body
@@ -106,7 +106,7 @@ curl --request PUT 'https://localhost:8000/api/v1/questions/[id]/update/' \
 --form 'question_type=%question_type'
 ```
 ### Delete Question
-* Endpoint – https://localhost:8000/api/v1/question/[id]/update/
+* Endpoint – /api/v1/question/[id]/update/
 * Param – id (poll id), q_id (question id)
 * Header – Authorization: Token admin_token
 ```bash
@@ -115,7 +115,7 @@ curl --request DELETE 'https://localhost:8000/api/v1/questions/[id]/update' \
 ```
 ### Create Choice
 * HTTP Method – POST
-* Endpoint – https://localhost:8000/api/v1/polls/[id]/questions/[q_id]/choices/create/
+* Endpoint – /api/v1/polls/[id]/questions/[q_id]/choices/create/
 * Param – id (poll id), q_id (question id)
 * Header – Authorization: Token admin_token
 * Body
@@ -127,7 +127,7 @@ curl --request POST 'https://localhost:8000/api/v1/polls/[id]/questions/[q_id]/c
 ```
 ### Update Choice
 * HTTP Method – PUT or PATCH
-* Endpoint – https://localhost:8000/api/v1/choices/[id]/update/
+* Endpoint – /api/v1/choices/[id]/update/
 * Param – id (choice id)
 * Header – Authorization: Token admin_token
 * Body
@@ -141,7 +141,7 @@ curl --request PUT 'https://localhost:8000/api/v1/choices/[id]/update/' \
 ```
 ### Delete Choice
 * HTTP Method – DELETE
-* Endpoint – https://localhost:8000/api/v1/choices/[id]/update/
+* Endpoint – /api/v1/choices/[id]/update/
 * Param – id (poll id), q_id (question id)
 * Header – Authorization: Token admin_token
 ```bash
@@ -155,39 +155,40 @@ To answer a question and to retrieve a list of all answers an auth_id is require
 Authentication by a unique auth_id:int – no registration needed.
 To get an id:
 * HTTP Method – POST
+* Endpoint – /api/v1/create-id/
 ```bash
-curl --request DELETE 'https://localhost:8000/api/v1/create-id/'
+curl --request POST 'https://localhost:8000/api/v1/create-id/'
 ```
 ### Retrieve All Active Polls
 * HTTP Method – GET
-* Endpoint – https://localhost:8000/api/v1/polls/
+* Endpoint – /api/v1/polls/
 ```bash
 curl --request GET 'https://localhost:8000/api/v1/polls/'
 ```
 ### Retrieve A Single Poll Details
 * HTTP Method – GET
-* Endpoint – https://localhost:8000/api/v1/polls/[id]/
+* Endpoint – /api/v1/polls/[id]/
 * Param – id (poll id)
 ```bash
 curl --request GET 'https://localhost:8000/api/v1/polls/[id]/'
 ```
 ### Retrieve All Questions For A Specified Poll
 * HTTP Method – GET
-* Endpoint – https://localhost:8000/api/v1/polls/[id]/questions/
+* Endpoint – /api/v1/polls/[id]/questions/
 * Param – id (poll id)
 ```bash
 curl --request GET 'https://localhost:8000/api/v1/polls/[id]/questions/'
 ```
 ### Retrieve A Singe Question Details
 * HTTP Method – GET
-* Endpoint – https://localhost:8000/api/v1/polls/[id]/questions/[q_id]/
+* Endpoint – /api/v1/polls/[id]/questions/[q_id]/
 * Param – id (poll id), q_id (question id)
 ```bash
 curl --request GET 'https://localhost:8000/api/v1/polls/[id]/questions/[q_id]/'
 ```
 ### Retrieve All Choices For A Specified Question
 * HTTP Method – GET
-* Endpoint – https://localhost:8000/api/v1/polls/[id]/questions/[q_id]/choices/
+* Endpoint – /api/v1/polls/[id]/questions/[q_id]/choices/
 * Param – id (poll id), q_id (question id)
 ```bash
 curl --request GET 'https://localhost:8000/api/v1/polls/[id]/questions/[q_id]/choices/'
@@ -195,7 +196,7 @@ curl --request GET 'https://localhost:8000/api/v1/polls/[id]/questions/[q_id]/ch
 ### Answer A Text Question
 NB! An empty list should be submitted for selected_options (body) 
 * HTTP Method – POST
-* Endpoint – https://localhost:8000/api/v1/polls/[id]/questions/[q_id]/answer/
+* Endpoint – /api/v1/polls/[id]/questions/[q_id]/answer/
 * Param – id (poll id), q_id (question id)
 * Header – auth-id: auth_id
 * Body
@@ -210,7 +211,7 @@ curl --request POST 'https://localhost:8000/api/v1/polls/[id]/questions/[q_id]/a
 ### Answer A Single Option Question
 NB! An empty list should be submitted for selected_options (body) 
 * HTTP Method – POST
-* Endpoint – https://localhost:8000/api/v1/polls/[id]/questions/[q_id]/answer/
+* Endpoint – /api/v1/polls/[id]/questions/[q_id]/answer/
 * Param – id (poll id), q_id (question id)
 * Header – auth-id: auth_id
 * Body
@@ -224,7 +225,7 @@ curl --request POST 'https://localhost:8000/api/polls/[id]/questions/[q_id]/answ
 ```
 ### Answer A Multiple Choice Question
 * HTTP Method – POST
-* Endpoint – https://localhost:8000/api/v1/polls/[id]/questions/[q_id]/answer/
+* Endpoint – /api/v1/polls/[id]/questions/[q_id]/answer/
 * Param – id (poll id), q_id (question id)
 * Header – auth-id: auth_id
 * Body
@@ -236,7 +237,7 @@ curl --request POST 'https://localhost:8000/api/v1/polls/[id]/questions/[q_id]/a
 ```
 ### Retrieve All Answered Polls with Answers
 * HTTP Method – GET
-* Endpoint – https://localhost:8000/api/v1/polls/my-answers/
+* Endpoint – /api/v1/polls/my-answers/
 * Header – auth-id: auth_id
 ```bash
 curl --request GET 'https://localhost:8000/api/v1/polls/my-answers/' \
